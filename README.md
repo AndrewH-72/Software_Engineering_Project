@@ -1,5 +1,8 @@
 # Software_Engineering_Project
 
+Roadmap:
+Decided to first work on a login system because the project requires having some way of identifying users
+
 Added:
 - multiple screens and screen switching
 - 'roles' - admin and user
