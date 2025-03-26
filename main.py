@@ -70,13 +70,13 @@ def clear_database():
 def login():
     dataConnector = sqlite3.connect('userData.db')
     cursor = dataConnector.cursor()
-    
+
     cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", 
                    (login_username.get(), login_password.get()))
     user = cursor.fetchone()
 
     if user:
-        login_result.config(text=f"{user[1]} - {user[2]} - {user[3]}")
+        login_result.config(text=f"{user[1]} - {user[3]}")
     else:
         login_result.config(text="Invalid username or password!")
 
