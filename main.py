@@ -76,7 +76,7 @@ def login():
     user = cursor.fetchone()
 
     if user:
-        login_result.config(text=f"{user[1]} - {user[3]}")
+        login_result.config(text=f"Succesfully Logged in \nWelcome {user[1]} - {user[3]}")
     else:
         login_result.config(text="Invalid username or password!")
 
