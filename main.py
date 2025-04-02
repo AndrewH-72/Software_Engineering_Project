@@ -1,12 +1,12 @@
 from tkinter import *
 import sqlite3
 
-# Initialize main window
+#main window
 root = Tk()
 root.title('User Management System')
 root.geometry("400x400")
 
-# Database setup 
+# Database  
 dataConnector = sqlite3.connect('userData.db')
 cursor = dataConnector.cursor()
 
@@ -19,13 +19,15 @@ cursor.execute(""" CREATE TABLE IF NOT EXISTS users (
 dataConnector.commit()
 dataConnector.close()
 
-# switching
+# --Functions--
+# switching screens
 def show_screen(screen):
     add_user_frame.pack_forget()
     login_frame.pack_forget()
+    welcome_frame.pack_forget()
     screen.pack(pady=20)
 
-# adding a user
+# adding user
 def submit():
     dataConnector = sqlite3.connect('userData.db')
     cursor = dataConnector.cursor()
@@ -45,28 +47,27 @@ def query_users():
     dataConnector = sqlite3.connect('userData.db')
     cursor = dataConnector.cursor()
 
-    cursor.execute("SELECT *, oid FROM users")
+    cursor.execute("SELECT username, role FROM users")
     persons = cursor.fetchall()
 
-    show_contacts = ""
+    show_contacts = "Username | Role\n"
+    show_contacts += "-" * 20 + "\n"
     for person in persons:
-        show_contacts += str(person) + "\n"
+        show_contacts += f"{person[0]} | {person[1]}\n"
 
     show_users_label.config(text=show_contacts)  
 
     dataConnector.close()
 
-
-
+# clear
 def clear_database():
     dataConnector = sqlite3.connect('userData.db')
     cursor = dataConnector.cursor()
-
     cursor.execute("DELETE FROM users")
-
     dataConnector.commit()
     dataConnector.close()
 
+# login 
 def login():
     dataConnector = sqlite3.connect('userData.db')
     cursor = dataConnector.cursor()
@@ -76,15 +77,21 @@ def login():
     user = cursor.fetchone()
 
     if user:
-        login_result.config(text=f"Succesfully Logged in \nWelcome {user[1]} - {user[3]}")
+        login_result.config(text="")
+        welcome_label.config(text=f"Successfully Logged in\nWelcome {user[1]} - {user[3]}")
+        show_screen(welcome_frame)
     else:
         login_result.config(text="Invalid username or password!")
 
     dataConnector.close()
 
-# add User Screen
-add_user_frame = Frame(root)
+# Welcome Screen
+welcome_frame = Frame(root)
+welcome_label = Label(welcome_frame, text="")
+welcome_label.pack()
 
+# add Userss
+add_user_frame = Frame(root)
 Label(add_user_frame, text="Username").grid(row=0, column=0)
 Label(add_user_frame, text="Password").grid(row=1, column=0)
 
@@ -104,9 +111,8 @@ Button(add_user_frame, text="Clear Users", command=clear_database).grid(row=5, c
 show_users_label = Label(add_user_frame, text="")
 show_users_label.grid(row=6, column=0, columnspan=2)
 
-#login Screen
+# login
 login_frame = Frame(root)
-
 Label(login_frame, text="Username").grid(row=0, column=0)
 Label(login_frame, text="Password").grid(row=1, column=0)
 
@@ -125,7 +131,7 @@ Button(nav_frame, text="Go to Login", command=lambda: show_screen(login_frame)).
 Button(nav_frame, text="Go to Add User", command=lambda: show_screen(add_user_frame)).pack(side=RIGHT, padx=10)
 nav_frame.pack()
 
-# Show default screen
+#  default screen
 show_screen(add_user_frame)
 
 root.mainloop()
