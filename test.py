@@ -2,7 +2,7 @@ from tkinter import *
 import sqlite3
 
 root = Tk()
-root.title('Assignment Information')
+root.title('To-Do List')
 
 #Create the Database
 
@@ -30,8 +30,8 @@ def entry():
             'dueDate':dueDate_entry.get(),
             'description':description_entry.get(),
             'status':Radio_var.get()
-        }
-        )
+        })
+    
     dataConnector.commit()
     dataConnector.close()
 
@@ -39,24 +39,40 @@ def entry():
     dueDate_entry.delete(0, END)
     description_entry.delete(0, END)
 
-def query_assignmentList():
+    refreshAssignment()
+
+def refreshAssignment():
     dataConnector = sqlite3.connect('assignmentData.db')
     cursor = dataConnector.cursor()
 
     cursor.execute("SELECT *, oid FROM assignmentList ORDER BY dueDate ASC")
-    task = cursor.fetchall()
-
-    show_assignmentList = ""
+    tasks = cursor.fetchall()
+    listbox.delete(0, END)
+    for task in tasks:
+        listbox.insert(END, f"{task[0]} - {task[1]} - {task[2]} - {task[3]}")
+    '''
+   show_assignmentList = "\tTasks:\nName:\t\tDue Date:\t\tDescription:\t\tStatus"
     for task in task:
-        show_assignmentList += str(task) + "\n"
-    
-    query_label = Label(root, text = show_assignmentList)
-    query_label.grid(row = 6, column = 1)
-
+        #show_assignmentList += str(task) + "\n"
+        show_assignmentList += f"\n{task[0]}\t\t"
+        show_assignmentList += f"{task[1]}\t\t"
+        show_assignmentList += f"{task[2]}\t\t"
+        show_assignmentList += f"{task[3]}\n"
+    '''
+    #query_label.config(text=show_assignmentList)
+    #query_label = Label(root, text = show_assignmentList)
+    dataConnector.close()
+    #query_label.grid(row = 6, column = 1)
+'''
+def refreshAssignment():
+    query_assignmentList()
+    root.after(1000, refreshAssignment)
+'''
 
 def rbutton(value):
-    label3 = Label(root, text = f"Selected Status: {value}")
-    label3.grid(row = 4, column = 2, sticky = W, padx = 5)
+    #label3 = Label(root, text = f"Selected Status: {value}")
+    #label3.grid(row = 4, column = 2, sticky = W, padx = 5)
+    pass
 
 #Create GUI
 Radio_var = StringVar()
@@ -67,11 +83,17 @@ for option in options:
     Radiobutton(root, text=option, variable = Radio_var, value=option, command=lambda: rbutton(Radio_var.get())).grid(row =3, column = counter+1)
     counter += 1
 
+listbox_label = Label(root, text="Task List", font=("Arial", 14,"bold"))
+listbox_label.grid(row=0, column=0, padx=5, pady=5, sticky="W")
+
+listbox = Listbox(root, width=60, height=15)
+listbox.grid(row=1, column=0, rowspan=6, padx=5, pady=5)
+
 
 #Create widgets
-name_entry = Entry(root, width = 50)
-dueDate_entry = Entry(root, width = 50)
-description_entry = Entry(root, width = 50)
+name_entry = Entry(root, width = 40)
+dueDate_entry = Entry(root, width = 40)
+description_entry = Entry(root, width = 40)
 
 
 #Lable widget
@@ -82,8 +104,9 @@ status_label = Label(root, text = "Status")
 
 
 entry = Button(root, text= "Add assignment to To-do list", command = entry)
-show = Button(root, text= "Show list of assignments", command = query_assignmentList)
+#show = Button(root, text= "Show list of assignments", command = query_assignmentList)
 
+query_label = Label(root, text="", justify=LEFT)
 
 #Call entry widgets
 name_entry.grid(row = 0, column = 1)
@@ -97,7 +120,9 @@ description_label.grid(row = 2, column = 0)
 status_label.grid(row = 3, column = 0)
 
 entry.grid(row = 5, column = 0)
-show.grid(row = 5, column = 1)
+query_label.grid(row=1, column = 3, columnspan=2, sticky="w")
+refreshAssignment()
+#show.grid(row = 5, column = 1)
 
 dataConnector.commit()
 dataConnector.close()
