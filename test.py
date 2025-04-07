@@ -69,6 +69,15 @@ def refreshAssignment():
     root.after(1000, refreshAssignment)
 '''
 
+def add_action():
+    entry()
+def edit_action():
+    pass
+def delete_action():
+    pass
+def clear_action():
+    pass
+
 def rbutton(value):
     #label3 = Label(root, text = f"Selected Status: {value}")
     #label3.grid(row = 4, column = 2, sticky = W, padx = 5)
@@ -76,12 +85,14 @@ def rbutton(value):
 
 #Create GUI
 Radio_var = StringVar()
+'''
 
 options = ["Not Started", "In Progess", "Complete"]
 counter = 0
 for option in options:
     Radiobutton(root, text=option, variable = Radio_var, value=option, command=lambda: rbutton(Radio_var.get())).grid(row =3, column = counter+1)
     counter += 1
+'''
 
 listbox_label = Label(root, text="Task List", font=("Arial", 14,"bold"))
 listbox_label.grid(row=0, column=0, padx=5, pady=5, sticky="W")
@@ -103,11 +114,11 @@ description_label = Label(root, text = "Description")
 status_label = Label(root, text = "Status")
 
 
-entry = Button(root, text= "Add assignment to To-do list", command = entry)
+#entry = Button(root, text= "Add assignment to To-do list", command = entry)
 #show = Button(root, text= "Show list of assignments", command = query_assignmentList)
 
 query_label = Label(root, text="", justify=LEFT)
-
+''' 
 #Call entry widgets
 name_entry.grid(row = 0, column = 1)
 dueDate_entry.grid(row = 1, column = 1)
@@ -118,8 +129,19 @@ name_label.grid(row = 0, column = 0)
 dueDate_label.grid(row = 1, column = 0)
 description_label.grid(row = 2, column = 0)
 status_label.grid(row = 3, column = 0)
+'''
 
-entry.grid(row = 5, column = 0)
+addButton = Button(root, text= "Add assignment to To-do list", command = add_action)
+editButton = Button(root, text= "Edit assignment in To-do list", command = edit_action)
+deleteButton = Button(root, text= "Delete assignment to To-do list", command = delete_action)
+clearButton = Button(root, text= "Clear To-do list", command = clear_action)
+
+addButton.grid(row = 1, column = 3, padx=5, pady=5)
+editButton.grid(row = 2, column = 3, padx=5, pady=5)
+deleteButton.grid(row = 3, column = 3, padx=5, pady=5)
+clearButton.grid(row = 4, column = 3, padx=5, pady=5)
+
+#entry.grid(row = 5, column = 0)
 query_label.grid(row=1, column = 3, columnspan=2, sticky="w")
 refreshAssignment()
 #show.grid(row = 5, column = 1)
