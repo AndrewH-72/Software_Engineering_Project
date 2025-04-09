@@ -133,5 +133,4 @@ nav_frame.pack()
 
 #  default screen
 show_screen(add_user_frame)
-
 root.mainloop()
