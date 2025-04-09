@@ -29,7 +29,7 @@ def submit_action():
             'name':name_entry.get(),
             'dueDate':dueDate_entry.get(),
             'description':description_entry.get(),
-            'status':Radio_var.get(),
+            'status':drop_var.get(),
             'members':members_entry.get()
         })
 
