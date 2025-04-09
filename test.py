@@ -41,6 +41,7 @@ def submit_action():
     description_entry.delete(0, END)
     members_entry.delete(0, END)
 
+
     refreshAssignment()
 
     #Hide label and widgets
@@ -66,10 +67,12 @@ def refreshAssignment():
     tasks = cursor.fetchall()
     listbox.delete(0, END)
     for task in tasks:
-        listbox.insert(END, f"{task[0]} - {task[1]} - {task[2]} - {task[3]}")
+        listbox.insert(END, f"{task[0]} - {task[1]} - {task[2]} - {task[3]}- {task[4]}")
     dataConnector.close()
 
 def add_action():
+    drop_var.set("Status")
+
     #Call label and widgets
     name_label.grid(row = 1, column = 1,columnspan = 2, padx=5, pady=5, sticky ="W")
     dueDate_label.grid(row = 2, column = 1, columnspan = 2, padx=5, pady=5, sticky ="W")
@@ -85,7 +88,6 @@ def add_action():
 
     submitButton.config(text="Submit Assignment", command=submit_action)
     submitButton.grid(row=6, column=1, padx=5,pady=5, sticky="W")
-
 
 
 
@@ -106,9 +108,6 @@ def clear_action():
 
     refreshAssignment()
 
-#Create GUI
-Radio_var = StringVar()
-Radio_var.set("Not Started")
 
 #Create listbox to show assignments
 listbox_label = Label(root, text="\t\tTask List", font=("Arial", 25,"bold"))
