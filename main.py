@@ -140,8 +140,8 @@ Button(nav_frame, text="Go to Login", command=lambda: show_screen(login_frame)).
 Button(nav_frame, text="Go to Add User", command=lambda: show_screen(add_user_frame)).pack(side=RIGHT, padx=10)
 nav_frame.pack()
 
-#task manager testing
-Button(welcome_frame, text="Open Task Manager", command=launch_task_ui).pack(pady=10)
+#To do list interaction
+Button(welcome_frame, text="Open To Do list", command=launch_task_ui).pack(pady=10)
 
 #  default screen
 show_screen(add_user_frame)
