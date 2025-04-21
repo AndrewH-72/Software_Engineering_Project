@@ -1,5 +1,6 @@
 from tkinter import *
 import sqlite3
+import subprocess
 
 #main window
 root = Tk()
@@ -9,6 +10,7 @@ root.geometry("400x400")
 # Database  
 dataConnector = sqlite3.connect('userData.db')
 cursor = dataConnector.cursor()
+
 
 cursor.execute(""" CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,6 +87,13 @@ def login():
 
     dataConnector.close()
 
+#testing opening the task manager thing
+def launch_task_ui():
+    try:
+        subprocess.Popen(['python', 'test.py'])  
+    except Exception as e:
+        print('Error launching task UI:', e)
+
 # Welcome Screen
 welcome_frame = Frame(root)
 welcome_label = Label(welcome_frame, text="")
@@ -130,6 +139,9 @@ nav_frame = Frame(root)
 Button(nav_frame, text="Go to Login", command=lambda: show_screen(login_frame)).pack(side=LEFT, padx=10)
 Button(nav_frame, text="Go to Add User", command=lambda: show_screen(add_user_frame)).pack(side=RIGHT, padx=10)
 nav_frame.pack()
+
+#task manager testing
+Button(welcome_frame, text="Open Task Manager", command=launch_task_ui).pack(pady=10)
 
 #  default screen
 show_screen(add_user_frame)
