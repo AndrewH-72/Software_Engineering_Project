@@ -105,7 +105,7 @@ Label(add_user_frame, text="Username").grid(row=0, column=0)
 Label(add_user_frame, text="Password").grid(row=1, column=0)
 
 username_entry = Entry(add_user_frame, width=30)
-password_entry = Entry(add_user_frame, width=30)
+password_entry = Entry(add_user_frame, width=30, show="*")
 username_entry.grid(row=0, column=1)
 password_entry.grid(row=1, column=1)
 
