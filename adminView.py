@@ -5,12 +5,8 @@ import sqlite3
 root = Tk()
 root.title('To-Do List')
 
-#Create the Database
-
-#Create the connector
-dataConnector = sqlite3.connect('assignmentData.db')
-
-#Create Cursor
+# Create the Database
+dataConnector = sqlite3.connect('applicationData.db')  # Changed to unified DB
 cursor = dataConnector.cursor()
 
 cursor.execute( '''CREATE TABLE IF NOT EXISTS assignmentList(
@@ -20,21 +16,21 @@ cursor.execute( '''CREATE TABLE IF NOT EXISTS assignmentList(
                     status TEXT,
                     members TEXT)''')
 
-#Create tree to organize the tasks
-columns = ("name", "due","desc", "status", "members")
-tree = ttk.Treeview(root, columns = columns, show="headings", height = 15)
+# Create tree to organize the tasks
+columns = ("name", "due", "desc", "status", "members")
+tree = ttk.Treeview(root, columns=columns, show="headings", height=15)
 
-tree.heading("name", text = "Task Name")
-tree.heading("due", text = "Due Date")
-tree.heading("desc", text = "Description")
-tree.heading("status", text = "Status")
-tree.heading("members", text = "Team Members")
+tree.heading("name", text="Task Name")
+tree.heading("due", text="Due Date")
+tree.heading("desc", text="Description")
+tree.heading("status", text="Status")
+tree.heading("members", text="Team Members")
 
-tree.column("name", width = 150)
-tree.column("due", width = 150)
-tree.column("desc", width = 150)
-tree.column("status", width = 150)
-tree.column("members", width = 150)
+tree.column("name", width=150)
+tree.column("due", width=150)
+tree.column("desc", width=150)
+tree.column("status", width=150)
+tree.column("members", width=150)
 
 #Click on the task and display task information
 def onTreeSelect(event):
@@ -65,7 +61,7 @@ def refreshAssignment():
     for row in tree.get_children():
         tree.delete(row)
 
-    dataConnector = sqlite3.connect('assignmentData.db')
+    dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
     #Display the assignments
     cursor.execute("SELECT name, dueDate, description, status, members FROM assignmentList ORDER BY dueDate ASC")
@@ -143,7 +139,7 @@ def add_action():
 
 #Function to submit a task into the tree
 def submit_action():
-    dataConnector = sqlite3.connect('assignmentData.db')
+    dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
 
     cursor.execute("INSERT INTO assignmentList VALUES(:name,:dueDate,:description,:status,:members)",
@@ -211,7 +207,7 @@ def loadTask():
     taskName = assignmentEdit_entry.get().strip()
 
     taskName = assignmentEdit_entry.get()
-    dataConnector = sqlite3.connect('assignmentData.db')
+    dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
     cursor.execute("SELECT * FROM assignmentList WHERE LOWER(name) = LOWER(?)", (taskName.lower(),))
     task = cursor.fetchone()
@@ -237,7 +233,7 @@ def loadTask():
 
 def updateTask():
     global currentEditTask
-    dataConnector = sqlite3.connect('assignmentData.db')
+    dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
     cursor.execute(""" 
         UPDATE assignmentList SET
@@ -286,7 +282,7 @@ def delete_action():
 def confirmDelete(taskName):
     taskName = taskName.strip()
 
-    dataConnector = sqlite3.connect('assignmentData.db')
+    dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
     #Delete an task
     cursor.execute("DELETE FROM assignmentList WHERE LOWER(name) = LOWER(?)", (taskName,))
@@ -314,7 +310,7 @@ def cancelDelete_action():
 
 ################### Function to clear all the tasks #########################
 def clear_action():
-    dataConnector = sqlite3.connect('assignmentData.db')
+    dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
     cursor.execute("DELETE FROM assignmentList")
     dataConnector.commit()

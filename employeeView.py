@@ -2,16 +2,11 @@ from tkinter import *
 from tkinter import ttk
 import sqlite3
 
-
 root = Tk()
 root.title('To-Do List')
 
-#Create the Database
-
-#Create the connector
-dataConnector = sqlite3.connect('assignmentData.db')
-
-#Create Cursor
+# Create the Database
+dataConnector = sqlite3.connect('applicationData.db')  # Changed to unified DB
 cursor = dataConnector.cursor()
 
 cursor.execute( '''CREATE TABLE IF NOT EXISTS assignmentList(
@@ -21,27 +16,27 @@ cursor.execute( '''CREATE TABLE IF NOT EXISTS assignmentList(
                     status TEXT,
                     members TEXT)''')
 
-#Create tree to organize the tasks
-columns = ("name", "due","desc", "status", "members")
-tree = ttk.Treeview(root, columns = columns, show="headings", height = 15)
+# Create tree to organize the tasks
+columns = ("name", "due", "desc", "status", "members")
+tree = ttk.Treeview(root, columns=columns, show="headings", height=15)
 
-tree.heading("name", text = "Task Name")
-tree.heading("due", text = "Due Date")
-tree.heading("desc", text = "Description")
-tree.heading("status", text = "Status")
-tree.heading("members", text = "Team Members")
+tree.heading("name", text="Task Name")
+tree.heading("due", text="Due Date")
+tree.heading("desc", text="Description")
+tree.heading("status", text="Status")
+tree.heading("members", text="Team Members")
 
-tree.column("name", width = 150)
-tree.column("due", width = 150)
-tree.column("desc", width = 150)
-tree.column("status", width = 150)
-tree.column("members", width = 150)
+tree.column("name", width=150)
+tree.column("due", width=150)
+tree.column("desc", width=150)
+tree.column("status", width=150)
+tree.column("members", width=150)
 
 def refreshAssignment():
     for row in tree.get_children():
         tree.delete(row)
 
-    dataConnector = sqlite3.connect('assignmentData.db')
+    dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
     
     cursor.execute("SELECT rowid, * FROM assignmentList ORDER BY dueDate ASC")
@@ -110,7 +105,7 @@ def close_action():
 def confirmEdit():
     newStatus = drop_var.get()
 
-    dataConnector = sqlite3.connect('assignmentData.db')
+    dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
     
     cursor.execute("UPDATE assignmentList SET status = ? WHERE rowid = ?",(newStatus, selectedTask))

@@ -2,15 +2,14 @@ from tkinter import *
 import sqlite3
 import subprocess
 
-#main window
+# main window
 root = Tk()
 root.title('User Management System')
 root.geometry("400x400")
 
 # Database  
-dataConnector = sqlite3.connect('userData.db')
+dataConnector = sqlite3.connect('applicationData.db')  # Changed to unified DB
 cursor = dataConnector.cursor()
-
 
 cursor.execute(""" CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,10 +17,11 @@ cursor.execute(""" CREATE TABLE IF NOT EXISTS users (
     password TEXT,
     role TEXT
 )""")
+
 dataConnector.commit()
 dataConnector.close()
 
-# --Functions--
+# -- Functions --
 # switching screens
 def show_screen(screen):
     add_user_frame.pack_forget()
@@ -31,7 +31,7 @@ def show_screen(screen):
 
 # adding user
 def submit():
-    dataConnector = sqlite3.connect('userData.db')
+    dataConnector = sqlite3.connect('applicationData.db')  # Changed to unified DB
     cursor = dataConnector.cursor()
     
     selected_role = role_var.get()
@@ -46,7 +46,7 @@ def submit():
 
 # show users
 def query_users():
-    dataConnector = sqlite3.connect('userData.db')
+    dataConnector = sqlite3.connect('applicationData.db')  # Changed to unified DB
     cursor = dataConnector.cursor()
 
     cursor.execute("SELECT username, role FROM users")
@@ -63,7 +63,7 @@ def query_users():
 
 # clear
 def clear_database():
-    dataConnector = sqlite3.connect('userData.db')
+    dataConnector = sqlite3.connect('applicationData.db')  # Changed to unified DB
     cursor = dataConnector.cursor()
     cursor.execute("DELETE FROM users")
     dataConnector.commit()
@@ -71,7 +71,7 @@ def clear_database():
 
 # login 
 def login():
-    dataConnector = sqlite3.connect('userData.db')
+    dataConnector = sqlite3.connect('applicationData.db')  # Changed to unified DB
     cursor = dataConnector.cursor()
 
     cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", 
@@ -81,18 +81,32 @@ def login():
     if user:
         login_result.config(text="")
         welcome_label.config(text=f"Successfully Logged in\nWelcome {user[1]} - {user[3]}")
+
+        # Check the role and open the appropriate view
+        if user[3] == 'Admin':  # If the user is an admin
+            launch_admin_view()
+        else:  # If the user is an employee
+            launch_employee_view()
+        
         show_screen(welcome_frame)
     else:
         login_result.config(text="Invalid username or password!")
 
     dataConnector.close()
 
-#testing opening the task manager thing
-def launch_task_ui():
+# testing opening the admin manager
+def launch_admin_view():
     try:
-        subprocess.Popen(['python', 'test.py'])  
+        subprocess.Popen(['python', 'adminView.py'])  # Runs the task manager for admin
     except Exception as e:
-        print('Error launching task UI:', e)
+        print('Error launching admin task UI:', e)
+
+# Function to launch the employee view
+def launch_employee_view():
+    try:
+        subprocess.Popen(['python', 'employeeView.py'])  # Runs the task manager for employee
+    except Exception as e:
+        print('Error launching employee task UI:', e)
 
 # Welcome Screen
 welcome_frame = Frame(root)
@@ -140,9 +154,9 @@ Button(nav_frame, text="Go to Login", command=lambda: show_screen(login_frame)).
 Button(nav_frame, text="Go to Add User", command=lambda: show_screen(add_user_frame)).pack(side=RIGHT, padx=10)
 nav_frame.pack()
 
-#To do list interaction
-Button(welcome_frame, text="Open To Do list", command=launch_task_ui).pack(pady=10)
+# To do list interaction
+Button(welcome_frame, text="Open To Do list", command=launch_admin_view).pack(pady=10)
 
-#  default screen
+# default screen
 show_screen(add_user_frame)
 root.mainloop()
