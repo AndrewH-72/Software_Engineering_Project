@@ -184,10 +184,10 @@ def edit_action():
     assignmentEdit_entry.grid(row = 2, column = 1)
 
     submitEditButton.config(text="Load Task", command = loadTask)
-    submitEditButton.grid(row=3, column=1, padx=5,pady=5, sticky="W")
+    submitEditButton.grid(row=3, column=1, padx=5,pady=5, sticky="E")
 
     cancelEditButton.config(text="Cancel", command=cancelEdit_action)
-    cancelEditButton.grid(row=3, column=1, padx=5,pady=5, sticky="E")
+    cancelEditButton.grid(row=3, column=1, padx=5,pady=5, sticky="W")
     
 def cancelEdit_action():
     assignmentEdit_entry.grid_forget()
@@ -226,10 +226,10 @@ def loadTask():
         members_entry.insert(0, task[4])
 
         submitButton.config(text="Save Changes", command = updateTask)
-        submitButton.grid(row=6, column=1, padx=5,pady=5, sticky="W")
+        submitButton.grid(row=6, column=1, padx=5,pady=5, sticky="E")
 
         cancelButton.config(text="Cancel", command=cancel_action)
-        cancelButton.grid(row=6, column=2, sticky="E")
+        cancelButton.grid(row=6, column=2, sticky="W")
 
 def updateTask():
     global currentEditTask
@@ -273,10 +273,10 @@ def delete_action():
     assignmentDel_entry.grid(row = 2, column = 1)
 
     submitDelButton.config(text="Delete Task", command=lambda: confirmDelete(assignmentDel_entry.get()))
-    submitDelButton.grid(row=3, column=1, padx=5,pady=5, sticky="W")
+    submitDelButton.grid(row=3, column=1, padx=5,pady=5, sticky="E")
 
     cancelDelButton.config(text="Cancel", command=cancelDelete_action)
-    cancelDelButton.grid(row=3, column=1, padx=5,pady=5, sticky="E")
+    cancelDelButton.grid(row=3, column=1, padx=5,pady=5, sticky="W")
 
 #Function to confirm that the user wants to delete a task
 def confirmDelete(taskName):
