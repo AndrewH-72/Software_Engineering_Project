@@ -32,7 +32,7 @@ tree.column("desc", width=150)
 tree.column("status", width=150)
 tree.column("members", width=150)
 
-#Click on the task and display task information
+# Click on the task and display task information
 def onTreeSelect(event):
     selectedItem = tree.focus()
     task_values = tree.item(selectedItem, 'values')
@@ -51,40 +51,84 @@ def onTreeSelect(event):
         cancelButton.config(text="Close", command=cancel_action)
         cancelButton.grid(row=6, column=2, padx=5, pady=5, sticky="E")
 
-tree.grid(row=1, column = 0, rowspan = 6, padx = 5, pady = 5)
+tree.grid(row=1, column=0, rowspan=6, padx=5, pady=5)
 tree.bind("<<TreeviewSelect>>", onTreeSelect)
 
 ################### Functions used throughout the actions #################
 
-#Refresh Assignments
+# Refresh Assignments
 def refreshAssignment():
     for row in tree.get_children():
         tree.delete(row)
 
     dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
-    #Display the assignments
     cursor.execute("SELECT name, dueDate, description, status, members FROM assignmentList ORDER BY dueDate ASC")
     tasks = cursor.fetchall()
     for task in tasks:
-        tree.insert("", END, values = task)
+        tree.insert("", END, values=task)
     dataConnector.close()
 
-#Function to display the task information labels and entry widgets
+# Function to display the task information labels and entry widgets
 def displayInfoLabelsEntry():
-    #Call label and widgets
-    name_label.grid(row = 1, column = 1, padx=5, pady=5, sticky ="W")
-    dueDate_label.grid(row = 2, column = 1, padx=5, pady=5, sticky ="W")
-    description_label.grid(row = 3, column = 1, padx=5, pady=5, sticky ="W")
-    members_label.grid(row = 5, column = 1, padx=5, pady=5, sticky ="W")
+    # Call label and widgets
+    name_label.grid(row=1, column=1, padx=5, pady=5, sticky="W")
+    dueDate_label.grid(row=2, column=1, padx=5, pady=5, sticky="W")
+    description_label.grid(row=3, column=1, padx=5, pady=5, sticky="W")
+    members_label.grid(row=5, column=1, padx=5, pady=5, sticky="W")
 
-    name_entry.grid(row = 1, column = 2, padx=5, pady=5)
-    dueDate_entry.grid(row = 2, column = 2, padx=5, pady=5)
-    description_entry.grid(row = 3, column = 2, padx=5, pady=5)
-    drop_menu.grid(row = 4,column = 1,padx=5, pady=5,sticky="W")
-    members_entry.grid(row = 5, column = 2, padx=5, pady=5)
+    name_entry.grid(row=1, column=2, padx=5, pady=5)
+    dueDate_entry.grid(row=2, column=2, padx=5, pady=5)
+    description_entry.grid(row=3, column=2, padx=5, pady=5)
+    drop_menu.grid(row=4, column=1, padx=5, pady=5, sticky="W")
+    members_entry.grid(row=5, column=2, padx=5, pady=5)
 
-#Function to delete the task information labels and entry widgets
+    # Show the Select Members button next to members_entry
+    select_members_button.grid(row=5, column=3, padx=5, pady=5, sticky="W")  
+
+# Function to get all users from the database 
+def get_all_users():
+    dataConnector = sqlite3.connect('applicationData.db')
+    cursor = dataConnector.cursor()
+    cursor.execute("SELECT username FROM users")  # Fetch all users 
+    users = cursor.fetchall()
+    dataConnector.close()
+    return [user[0] for user in users]  # Return list of usernames
+
+
+# Function to show the user selection popup 
+def show_user_selection():  # open top-level window for member selection
+    sel_win = Toplevel(root)
+    sel_win.title("Select Members")
+    sel_win.transient(root)
+    sel_win.grab_set()
+
+    # Listbox for multiple selection
+    lb = Listbox(sel_win, selectmode=MULTIPLE, height=10)
+    for user in get_all_users():
+        lb.insert(END, user)
+    lb.pack(padx=10, pady=10)
+
+    # Frame for action buttons
+    btn_frame = Frame(sel_win)
+    btn_frame.pack(pady=(0,10))
+
+    def confirm_selection():
+        selected = [lb.get(i) for i in lb.curselection()]
+        members_entry.delete(0, END)
+        members_entry.insert(0, ', '.join(selected))
+        sel_win.destroy()
+
+    def cancel_selection():
+        sel_win.destroy()
+
+    Button(btn_frame, text="OK", command=confirm_selection).pack(side=LEFT, padx=5)
+    Button(btn_frame, text="Cancel", command=cancel_selection).pack(side=LEFT, padx=5)
+
+    root.wait_window(sel_win)
+
+# Function to delete the task information labels and entry widgets
+
 def forgetInfoLabelsEntry():
     name_label.grid_forget()
     dueDate_label.grid_forget()
@@ -96,37 +140,37 @@ def forgetInfoLabelsEntry():
     description_entry.grid_forget()
     drop_menu.grid_forget()
     members_entry.grid_forget()
+    select_members_button.grid_forget()  
 
-#Function to clear all the entry widgets
+# Function to clear all the entry widgets
 def clearEntryWidgets():
-        name_entry.delete(0, END)
-        dueDate_entry.delete(0, END)
-        description_entry.delete(0, END)
-        drop_var.set( "Status")
-        members_entry.delete(0, END)
+    name_entry.delete(0, END)
+    dueDate_entry.delete(0, END)
+    description_entry.delete(0, END)
+    drop_var.set("Status")
+    members_entry.delete(0, END)
 
-#Function to hide the action buttons
+# Function to hide the action buttons
 def hideActionButtons():
     addButton.grid_forget()
     editButton.grid_forget()
     deleteButton.grid_forget()
-    clearButton.grid_forget()   
+    clearButton.grid_forget()
 
-#use this to queue the UI update after the current event loop finishes
+# use this to queue the UI update after the current event loop finishes
 def showActionButtons():
     root.after(0, _show_buttons)
 
-#Function to show the action buttons
+# Function to show the action buttons
 def _show_buttons():
-    addButton.grid(row = 1, column = 1, padx=5, pady=5)
-    editButton.grid(row = 2, column = 1, padx=5, pady=5)
-    deleteButton.grid(row = 3, column = 1, padx=5, pady=5)
-    clearButton.grid(row = 4, column = 1, padx=5, pady=5)
+    addButton.grid(row=1, column=1, padx=5, pady=5)
+    editButton.grid(row=2, column=1, padx=5, pady=5)
+    deleteButton.grid(row=3, column=1, padx=5, pady=5)
+    clearButton.grid(row=4, column=1, padx=5, pady=5)
 
 #################### Functions used to add a task ########################
-#Function to add a task into the tree
+# Function to add a task into the tree
 def add_action():
-
     hideActionButtons()
     clearEntryWidgets()
     displayInfoLabelsEntry()
@@ -135,9 +179,9 @@ def add_action():
     submitButton.grid(row=6, column=1, padx=5,pady=5, sticky="W")
 
     cancelButton.config(text="Cancel", command=cancel_action)
-    cancelButton.grid(row=6, column=1, padx=5,pady=5, sticky="E")
+    cancelButton.grid(row=6, column=2, padx=5,pady=5, sticky="E")
 
-#Function to submit a task into the tree
+# Function to submit a task into the tree
 def submit_action():
     dataConnector = sqlite3.connect('applicationData.db')
     cursor = dataConnector.cursor()
@@ -318,61 +362,63 @@ def clear_action():
     refreshAssignment()
 
 ################# Creating all the labels, buttons, and widgets ##########################
+select_members_button = Button(root, text="Select Members", command=show_user_selection)  # Button to show users
+select_members_button.grid_forget()
 
-#Create tree label
-tree_label = Label(root, text="\t\t\tTask List", font=("Arial", 25,"bold"))
+# Create tree label
+tree_label = Label(root, text="\t\t\tTask List", font=("Arial", 25, "bold"))
 tree_label.grid(row=0, column=0, padx=5, pady=5, sticky="W")
 
-#Create entry widgets
-name_entry = Entry(root, width = 40)
-dueDate_entry = Entry(root, width = 40)
-description_entry = Entry(root, width = 40)
-members_entry = Entry(root, width = 40)
+# Create entry widgets
+name_entry = Entry(root, width=40)
+dueDate_entry = Entry(root, width=40)
+description_entry = Entry(root, width=40)
+members_entry = Entry(root, width=40)
 
-#Label widget
-name_label = Label(root, text = "Task Name")
-dueDate_label = Label(root, text = "Due Date (yyyy-mm-dd)")
-description_label = Label(root, text = "Description")
-members_label = Label(root, text = "Members")
+# Label widget
+name_label = Label(root, text="Task Name")
+dueDate_label = Label(root, text="Due Date (yyyy-mm-dd)")
+description_label = Label(root, text="Description")
+members_label = Label(root, text="Members")
 
-#Action buttons
-addButton = Button(root, text= "Add Task", command = add_action)
-editButton = Button(root, text= "Edit Task", command = edit_action)
-deleteButton = Button(root, text= "Delete Task", command = delete_action)
-clearButton = Button(root, text= "Clear To-do List", command = clear_action)
+# Action buttons 
+addButton = Button(root, text="Add Task", command=add_action)
+editButton = Button(root, text="Edit Task", command=edit_action)
+deleteButton = Button(root, text="Delete Task", command=delete_action)
+clearButton = Button(root, text="Clear To-do List", command=clear_action)
 
-#Call action buttons
-addButton.grid(row = 1, column = 1, padx=5, pady=5)
-editButton.grid(row = 2, column = 1, padx=5, pady=5)
-deleteButton.grid(row = 3, column = 1, padx=5, pady=5)
-clearButton.grid(row = 4, column = 1, padx=5, pady=5)
+# Call action buttons
+addButton.grid(row=1, column=1, padx=5, pady=5)
+editButton.grid(row=2, column=1, padx=5, pady=5)
+deleteButton.grid(row=3, column=1, padx=5, pady=5)
+clearButton.grid(row=4, column=1, padx=5, pady=5)
 
-#Submit button for adding an assignment
+# Submit button for adding an assignment
 submitButton = Button(root)
 
-#Cancel button to go back to the action buttons
+# Cancel button to go back to the action buttons
 cancelButton = Button(root)
 
-#Cancel button to go back to the action buttons
+# Cancel button to go back to the action buttons
 cancelEditButton = Button(root)
 
-#Cancel button to go back to the action buttons
+# Cancel button to go back to the action buttons
 cancelDelButton = Button(root)
 
-#Label and entry box for deleting an assignment
-assignmentDel_label = Label(root, text = "Enter the name of the task you want to delete:")
-assignmentDel_entry = Entry(root, width = 40)
+# Label and entry box for deleting an assignment
+assignmentDel_label = Label(root, text="Enter the name of the task you want to delete:")
+assignmentDel_entry = Entry(root, width=40)
 submitDelButton = Button(root)
 
-#Label and entry box for deleting an assignment
-assignmentEdit_label = Label(root, text = "Enter the name of the task you want to edit:")
-assignmentEdit_entry = Entry(root, width = 40)
+# Label and entry box for deleting an assignment
+assignmentEdit_label = Label(root, text="Enter the name of the task you want to edit:")
+assignmentEdit_entry = Entry(root, width=40)
 submitEditButton = Button(root)
 
-#Drop down menu for status
+# Drop down menu for status
 drop_var = StringVar()
 drop_var.set("Status")
-drop_menu = OptionMenu(root,drop_var,"Not Started", "In Progress")
+drop_menu = OptionMenu(root, drop_var, "Not Started", "In Progress")
 
 refreshAssignment()
 
