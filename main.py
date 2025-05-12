@@ -80,15 +80,17 @@ def login():
 
     if user:
         login_result.config(text="")
+
         welcome_label.config(text=f"Successfully Logged in\nWelcome {user[1]} - {user[3]}")
+
+        root.destroy()  # <-- Hide the login window
 
         # Check the role and open the appropriate view
         if user[3] == 'Admin':  # If the user is an admin
             launch_admin_view()
         else:  # If the user is an employee
             launch_employee_view()
-        
-        show_screen(welcome_frame)
+
     else:
         login_result.config(text="Invalid username or password!")
 
@@ -107,6 +109,40 @@ def launch_employee_view():
         subprocess.Popen(['python', 'employeeView.py'])  # Runs the task manager for employee
     except Exception as e:
         print('Error launching employee task UI:', e)
+
+# -- Admin popup auth before add user --
+def admin_auth_popup():
+    popup = Toplevel(root)
+    popup.title("Admin Login")
+    popup.geometry("300x150")
+
+    Label(popup, text="Admin Username:").pack()
+    admin_user = Entry(popup)
+    admin_user.pack()
+
+    Label(popup, text="Admin Password:").pack()
+    admin_pass = Entry(popup, show="*")
+    admin_pass.pack()
+
+    result_label = Label(popup, text="", fg="red")
+    result_label.pack()
+
+    def verify_admin():
+        conn = sqlite3.connect('applicationData.db')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE username = ? AND password = ? AND role = 'Admin'",
+                    (admin_user.get(), admin_pass.get()))
+        admin = cur.fetchone()
+        conn.close()
+
+        if admin:
+            popup.destroy()
+            show_screen(add_user_frame)
+        else:
+            result_label.config(text="Incorrect admin credentials.")
+
+    Button(popup, text="Submit", command=verify_admin).pack(pady=5)
+    Button(popup, text="Cancel", command=popup.destroy).pack()
 
 # Welcome Screen
 welcome_frame = Frame(root)
@@ -151,12 +187,13 @@ login_result.grid(row=3, column=0, columnspan=2)
 # navigation 
 nav_frame = Frame(root)
 Button(nav_frame, text="Go to Login", command=lambda: show_screen(login_frame)).pack(side=LEFT, padx=10)
-Button(nav_frame, text="Go to Add User", command=lambda: show_screen(add_user_frame)).pack(side=RIGHT, padx=10)
+Button(nav_frame, text="Go to Add User", command=admin_auth_popup).pack(side=RIGHT, padx=10)
 nav_frame.pack()
 
 # To do list interaction
 Button(welcome_frame, text="Open To Do list", command=launch_admin_view).pack(pady=10)
 
 # default screen
-show_screen(add_user_frame)
+show_screen(login_frame)
+
 root.mainloop()

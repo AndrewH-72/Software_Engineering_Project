@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import sqlite3
+import subprocess 
 
 root = Tk()
 root.title('To-Do List')
@@ -361,6 +362,10 @@ def clear_action():
     dataConnector.close()
     refreshAssignment()
 
+def return_to_login():
+    root.destroy()
+    subprocess.Popen(['python', 'main.py']) 
+
 ################# Creating all the labels, buttons, and widgets ##########################
 select_members_button = Button(root, text="Select Members", command=show_user_selection)  # Button to show users
 select_members_button.grid_forget()
@@ -386,6 +391,8 @@ addButton = Button(root, text="Add Task", command=add_action)
 editButton = Button(root, text="Edit Task", command=edit_action)
 deleteButton = Button(root, text="Delete Task", command=delete_action)
 clearButton = Button(root, text="Clear To-do List", command=clear_action)
+Button(root, text="Logout and Return to Login", command=return_to_login).grid(row=10, column=0, pady=10)
+
 
 # Call action buttons
 addButton.grid(row=1, column=1, padx=5, pady=5)

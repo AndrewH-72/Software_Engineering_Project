@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import sqlite3
+import subprocess 
 
 root = Tk()
 root.title('To-Do List')
@@ -115,7 +116,9 @@ def confirmEdit():
     refreshAssignment()
     root.update()
 
-
+def return_to_login():
+    root.destroy()
+    subprocess.Popen(['python', 'main.py'])
 
 name_entry = Entry(root, width = 40)
 dueDate_entry = Entry(root, width = 40)
@@ -131,6 +134,8 @@ members_label = Label(root, text = "Members")
 statusUpdateButton = Button(root, text= "Update Status")
 statusUpdateButton.config(command = confirmEdit)
 closeButton = Button(root)
+
+Button(root, text="Logout and Return to Login", command=return_to_login).grid(row=10, column=0, pady=10)
 
 drop_var = StringVar()
 drop_var.set("Status")
